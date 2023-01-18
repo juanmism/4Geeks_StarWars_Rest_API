@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Todo
 #from models import Person
 
 app = Flask(__name__)
@@ -41,6 +41,28 @@ def handle_hello():
 
     response_body = {
         "msg": "Hello, this is your GET /user response "
+    }
+
+@app.route('/user/<user_id>', methods=['GET'])
+def handle_xid(user_id):
+    print(user_id)
+    user = User.query.get(user_id)
+    print(user)
+    return jsonify(user.serialize()), 200
+
+@app.route("/user/register", methods=['POST'])
+def create_user():
+    body = request.get_json()
+    new_user = User(email=body['email'], password=body['password'], is_active=True)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify(new_user.serialize()), 200
+
+@app.route('/todo', methods=['GET'])
+def get_list():
+
+    response_body = {
+        "msg": "Hey "
     }
 
     return jsonify(response_body), 200
